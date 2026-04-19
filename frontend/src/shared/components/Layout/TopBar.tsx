@@ -58,8 +58,8 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, userName = "User" }) => {
       className="topbar-header"
       style={{
         padding: "0 24px",
-        backgroundColor: "#1890ff",
-        boxShadow: `0 2px 8px rgba(0, 0, 0, 0.15)`,
+        backgroundColor: "#fff",
+        boxShadow: `0 2px 8px rgba(15, 23, 42, 0.08)`,
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -71,7 +71,7 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, userName = "User" }) => {
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={() => setCollapsed(!collapsed)}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          style={{ color: "#fff" }}
+          style={{ color: "#2563eb" }}
         />
         <div className="topbar-brand">
           <h1>GH CAREGROUP SERVICES</h1>
@@ -87,12 +87,12 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, userName = "User" }) => {
               alignItems: "center",
               gap: "8px",
               cursor: "pointer",
-              color: "#fff",
+              color: "#1e3a8a",
             }}
           >
             <Avatar
               icon={<UserOutlined />}
-              style={{ backgroundColor: "#fff", color: "#1890ff" }}
+              style={{ backgroundColor: "#dbeafe", color: "#1d4ed8" }}
             />
             <span>{userName}</span>
           </Button>

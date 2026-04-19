@@ -1,9 +1,9 @@
 // Layout component variables
 @primary-color: #1890ff;
 @light-bg: #fff;
-@light-secondary-bg: #1890ff;
+@light-secondary-bg: #fff;
 @light-border: #f0f0f0;
-@light-text: #fff;
+@light-text: #1f2937;
 
 // Topbar styles
 .topbar-header {
@@ -13,7 +13,7 @@
   height: 64px;
   padding: 0 24px;
   background: @light-secondary-bg;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid @light-border;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -22,7 +22,7 @@
     margin: 0;
     font-size: 20px;
     font-weight: 600;
-    color: #fff;
+    color: @primary-color;
     flex-shrink: 0;
   }
 
@@ -42,7 +42,7 @@
   gap: 10px;
   height: 64px;
   padding: 0 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid @light-border;
   background: @light-secondary-bg;
 
   .sidebar-logo-image {
@@ -57,7 +57,7 @@
     margin: 0;
     font-size: 14px;
     font-weight: 600;
-    color: #fff;
+    color: @primary-color;
     white-space: nowrap;
   }
 
@@ -82,61 +82,61 @@
     border-right: none;
 
     .ant-menu-item {
-      color: #fff !important;
+      color: #334155 !important;
       background: transparent !important;
 
       &:hover {
-        color: #fff !important;
-        background: rgba(255, 255, 255, 0.1) !important;
+        color: @primary-color !important;
+        background: #eff6ff !important;
       }
 
       &.ant-menu-item-selected {
-        background: rgba(255, 255, 255, 0.2) !important;
-        color: #fff !important;
+        background: #dbeafe !important;
+        color: #1d4ed8 !important;
 
         &::after {
-          border-right-color: #fff !important;
+          border-right-color: @primary-color !important;
         }
       }
     }
 
     .ant-menu-submenu-title {
-      color: #fff !important;
+      color: #334155 !important;
 
       &:hover {
-        color: #fff !important;
-        background: rgba(255, 255, 255, 0.1) !important;
+        color: @primary-color !important;
+        background: #eff6ff !important;
       }
     }
 
     .anticon {
-      color: #fff !important;
+      color: #2563eb !important;
     }
 
     .ant-menu-submenu-title {
-      color: #fff !important;
+      color: #334155 !important;
 
       &:hover {
-        color: #fff !important;
-        background: rgba(255, 255, 255, 0.1) !important;
+        color: @primary-color !important;
+        background: #eff6ff !important;
       }
     }
 
     // Child menu items styling
     .ant-menu-submenu-inline {
       .ant-menu-item {
-        color: #fff !important;
+        color: #475569 !important;
         padding-left: 48px !important;
         background: transparent !important;
 
         &:hover {
-          color: #fff !important;
-          background: rgba(255, 255, 255, 0.1) !important;
+          color: @primary-color !important;
+          background: #eff6ff !important;
         }
 
         &.ant-menu-item-selected {
-          background: rgba(255, 255, 255, 0.2) !important;
-          color: #fff !important;
+          background: #dbeafe !important;
+          color: #1d4ed8 !important;
         }
       }
     }
@@ -151,11 +151,11 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
+    background: #bfdbfe;
     border-radius: 3px;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.5);
+      background: #93c5fd;
     }
   }
 }

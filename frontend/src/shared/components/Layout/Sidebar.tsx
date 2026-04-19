@@ -132,9 +132,9 @@ const Sidebar: React.FC = () => {
       trigger={null}
       theme="light"
       style={{
-        boxShadow: `2px 0 8px rgba(0, 0, 0, 0.15)`,
+        boxShadow: `2px 0 8px rgba(15, 23, 42, 0.08)`,
         overflowY: "auto",
-        backgroundColor: "#1890ff",
+        backgroundColor: "#fff",
       }}
     >
       <div className={`sidebar-logo${collapsed ? " collapsed" : ""}`}>

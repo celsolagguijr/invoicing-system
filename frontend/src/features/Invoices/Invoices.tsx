@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
+  Card,
   DatePicker,
   Form,
   Input,
@@ -265,45 +266,60 @@ const Invoices: React.FC = () => {
           </Space>
         }
       >
-        <Form
-          form={form}
-          layout="inline"
-          onFinish={handleSearch}
-          style={{ marginBottom: 16 }}
-        >
-          <Form.Item name="invoice_no" label="Invoice No">
-            <Input placeholder="e.g. INV" allowClear style={{ width: 220 }} />
-          </Form.Item>
+        <Card style={{ marginBottom: 16 }}>
+          <Form form={form} layout="vertical" onFinish={handleSearch}>
+            <Space size="middle" wrap style={{ width: "100%" }}>
+              <Form.Item
+                name="invoice_no"
+                label="Invoice No"
+                style={{ minWidth: 220, marginBottom: 0 }}
+              >
+                <Input placeholder="e.g. INV" allowClear />
+              </Form.Item>
 
-          <Form.Item name="client_id" label="Client">
-            <SearchableSelect
-              style={{ width: 260 }}
-              placeholder="Search client name"
-              fetchOptions={fetchClientOptions}
-              allowClear
-              minCharsToSearch={1}
-            />
-          </Form.Item>
+              <Form.Item
+                name="client_id"
+                label="Client"
+                style={{ minWidth: 260, marginBottom: 0 }}
+              >
+                <SearchableSelect
+                  placeholder="Search client name"
+                  fetchOptions={fetchClientOptions}
+                  allowClear
+                  minCharsToSearch={1}
+                />
+              </Form.Item>
 
-          <Form.Item name="invoice_date_from" label="Invoice Date From">
-            <DatePicker format="YYYY-MM-DD" allowClear />
-          </Form.Item>
+              <Form.Item
+                name="invoice_date_from"
+                label="Invoice Date From"
+                style={{ minWidth: 180, marginBottom: 0 }}
+              >
+                <DatePicker format="YYYY-MM-DD" allowClear />
+              </Form.Item>
 
-          <Form.Item name="invoice_date_to" label="Invoice Date To">
-            <DatePicker format="YYYY-MM-DD" allowClear />
-          </Form.Item>
+              <Form.Item
+                name="invoice_date_to"
+                label="Invoice Date To"
+                style={{ minWidth: 180, marginBottom: 0 }}
+              >
+                <DatePicker format="YYYY-MM-DD" allowClear />
+              </Form.Item>
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<SearchOutlined />}
-              loading={isFetching}
-            >
-              Search
-            </Button>
-          </Form.Item>
-        </Form>
+              <Form.Item style={{ marginBottom: 0 }}>
+                <Button
+                  type="primary"
+                  size="large"
+                  htmlType="submit"
+                  icon={<SearchOutlined />}
+                  loading={isFetching}
+                >
+                  Submit
+                </Button>
+              </Form.Item>
+            </Space>
+          </Form>
+        </Card>
 
         <Spin spinning={isFetching} tip="Searching invoices...">
           <Table
