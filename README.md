@@ -72,7 +72,46 @@ Notes:
 1. This project uses `SQLite` for local development.
 2. You do not need to create a MySQL database.
 
-## 5. Run Backend
+## 5. Configure Frontend Environment
+
+Go to frontend folder:
+
+```bash
+cd ../frontend
+```
+
+Create `.env` from the example:
+
+```bash
+cp .env.example .env
+```
+
+Set the API URL to your backend port:
+
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+VITE_API_TIMEOUT=5000
+```
+
+If your backend uses a different port (example: `8093`), update this value:
+
+```env
+VITE_API_BASE_URL=http://localhost:8093/api
+```
+
+## 6. Port Setup (Very Important)
+
+Use matching ports between backend and frontend:
+
+1. Backend port is controlled by `SERVER_PORT` in `backend/.env`.
+2. Frontend API target is controlled by `VITE_API_BASE_URL` in `frontend/.env`.
+
+Example mapping:
+
+1. Backend `SERVER_PORT=3000` -> Frontend `VITE_API_BASE_URL=http://localhost:3000/api`
+2. Backend `SERVER_PORT=8093` -> Frontend `VITE_API_BASE_URL=http://localhost:8093/api`
+
+## 7. Run Backend
 
 From `backend` folder:
 
@@ -84,7 +123,7 @@ Keep this terminal open.
 
 Expected result: backend runs on `http://localhost:3000` (or your configured `SERVER_PORT`).
 
-## 6. Run Frontend
+## 8. Run Frontend
 
 Open a second terminal:
 
@@ -97,7 +136,13 @@ Keep this terminal open too.
 
 Expected result: frontend runs on `http://localhost:5173`.
 
-## 7. Open The App
+Optional: run frontend on a different port:
+
+```bash
+npm run dev -- --port 5174
+```
+
+## 9. Open The App
 
 In your browser, open:
 
@@ -105,7 +150,7 @@ In your browser, open:
 http://localhost:5173
 ```
 
-## 8. Build Commands (Optional)
+## 10. Build Commands (Optional)
 
 Backend build:
 
@@ -121,13 +166,13 @@ cd frontend
 npm run build
 ```
 
-## 9. Common Issues
+## 11. Common Issues
 
 1. `npm run dev` fails in frontend:
   Ensure backend is running first and check that `.env` is configured in backend.
 
 2. Port already in use:
-  Change `SERVER_PORT` in backend `.env`, then restart backend.
+  Change `SERVER_PORT` in backend `.env` and update `VITE_API_BASE_URL` in frontend `.env`, then restart both servers.
 
 3. Token/login issues:
   Clear browser local storage and login again.
@@ -135,7 +180,7 @@ npm run build
 4. Database/schema errors after new fields:
   Stop backend, restart backend so TypeORM sync can update SQLite schema.
 
-## 10. Project Structure
+## 12. Project Structure
 
 ```text
 invoicing-system/

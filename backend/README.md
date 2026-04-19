@@ -76,6 +76,23 @@ BCRYPT_SALT_ROUND=5
 LOG_LEVEL=info
 ```
 
+### Port Setup (Frontend + Backend)
+
+This backend uses `SERVER_PORT` (default `3000`).
+
+Your frontend must point to this exact backend port using `frontend/.env`:
+
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+If you change backend port, update frontend too.
+
+Examples:
+
+1. Backend `SERVER_PORT=3000` -> Frontend `VITE_API_BASE_URL=http://localhost:3000/api`
+2. Backend `SERVER_PORT=8093` -> Frontend `VITE_API_BASE_URL=http://localhost:8093/api`
+
 ## Running the Application
 
 ### Development Mode
