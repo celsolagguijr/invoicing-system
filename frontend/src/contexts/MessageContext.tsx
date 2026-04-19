@@ -6,17 +6,17 @@ interface IMessageProvider {
 }
 
 interface MessageProviderType {
-  info: (message: string) => void;
-  success: (message: string) => void;
-  error: (message: string) => void;
-  warning: (message: string) => void;
+  info: (_message: string) => void;
+  success: (_message: string) => void;
+  error: (_message: string) => void;
+  warning: (_message: string) => void;
 }
 
 const MessageContext = createContext<MessageProviderType>({
-  info: (message: string) => {},
-  success: (message: string) => {},
-  error: (message: string) => {},
-  warning: (message: string) => {},
+  info: () => {},
+  success: () => {},
+  error: () => {},
+  warning: () => {},
 });
 
 const MessageProvider: React.FC<IMessageProvider> = (

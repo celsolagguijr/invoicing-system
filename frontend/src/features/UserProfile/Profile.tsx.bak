@@ -1,0 +1,87 @@
+import React from "react";
+import { Button, Card, Descriptions, Flex, Row, Skeleton, Col } from "antd";
+import type { DescriptionsProps } from "antd";
+import Page from "@app/shared/components/Page";
+import { Layout } from "@components/Layout";
+import UserProfile from "./useUserProfile";
+import { LogoutOutlined, ReloadOutlined } from "@ant-design/icons";
+
+const Profile: React.FC = () => {
+  const { data, isLoading, refetch, handleLogout } = UserProfile();
+
+  const borderedItems: DescriptionsProps["items"] = [
+    {
+      key: "1",
+      label: "User ID",
+      children: data?.id,
+    },
+    {
+      key: "2",
+      label: "First Name",
+      children: data?.firstName,
+    },
+    {
+      key: "3",
+      label: "Last Name",
+      children: data?.lastName,
+    },
+    {
+      key: "4",
+      label: "Date of Birth",
+      children: data?.dateOfBirth
+        ? new Date(data.dateOfBirth).toLocaleDateString()
+        : "-",
+    },
+    {
+      key: "5",
+      label: "Email",
+      children: data?.username,
+    },
+    {
+      key: "6",
+      label: "Password",
+      children: data?.password,
+    },
+  ];
+
+  function handleReload() {
+    refetch();
+  }
+
+  return (
+    <Page title="User Profile">
+      <Layout
+        onLogout={handleLogout}
+        userName={`${data?.firstName} ${data?.lastName}`}
+      >
+        <Row justify="center" style={{ width: "100%" }}>
+          <Col xs={24} sm={20} md={18} lg={16}>
+            <h2 style={{ marginBottom: "24px" }}>User Profile</h2>
+            <Card>
+              <Skeleton loading={isLoading}>
+                <Descriptions
+                  layout="vertical"
+                  extra={
+                    <Flex gap={"1em"}>
+                      <Button
+                        color="green"
+                        onClick={handleReload}
+                        icon={<ReloadOutlined />}
+                        loading={isLoading}
+                      >
+                        Reload
+                      </Button>
+                    </Flex>
+                  }
+                  items={borderedItems}
+                />
+              </Skeleton>
+            </Card>
+          </Col>
+        </Row>
+      </Layout>
+    </Page>
+  );
+};
+
+export default Profile;

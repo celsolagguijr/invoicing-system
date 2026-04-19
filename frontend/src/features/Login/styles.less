@@ -1,0 +1,152 @@
+.login-page {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 14% 18%,
+      rgba(15, 98, 254, 0.18),
+      transparent 44%
+    ),
+    radial-gradient(circle at 84% 84%, rgba(2, 132, 199, 0.2), transparent 40%),
+    linear-gradient(160deg, #f8fbff 0%, #eef6ff 55%, #f7fcff 100%);
+  font-family: "Manrope", "Nunito Sans", "Segoe UI", sans-serif;
+}
+
+.login-glow {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(45px);
+  z-index: 0;
+}
+
+.login-glow-left {
+  width: 220px;
+  height: 220px;
+  left: -70px;
+  top: 40px;
+  background: rgba(14, 116, 232, 0.35);
+}
+
+.login-glow-right {
+  width: 260px;
+  height: 260px;
+  right: -90px;
+  bottom: -40px;
+  background: rgba(8, 145, 178, 0.35);
+}
+
+.login-form-panel {
+  width: min(560px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  animation: loginFadeUp 360ms ease-out;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 460px;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.94);
+
+  .ant-card-body {
+    padding: 30px;
+  }
+
+  .ant-form-item-label > label {
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .ant-input-affix-wrapper,
+  .ant-btn {
+    border-radius: 10px;
+  }
+
+  .ant-btn-primary {
+    height: 46px;
+    font-weight: 700;
+    background: linear-gradient(120deg, #0f62fe, #116dff);
+    border: none;
+  }
+}
+
+.login-date {
+  font-size: 12px;
+  letter-spacing: 0.9px;
+  font-weight: 700;
+  color: #0369a1;
+  text-transform: uppercase;
+}
+
+.login-form-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.login-form-brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.login-form-brand-name {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #0f172a;
+}
+
+.login-title {
+  margin: 6px 0 6px 0 !important;
+  color: #0f172a !important;
+}
+
+.login-subtitle {
+  color: #475569;
+}
+
+@keyframes loginFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 992px) {
+  .login-page {
+    padding: 16px;
+  }
+
+  .login-form-panel {
+    padding: 0;
+  }
+
+  .login-card {
+    max-width: 540px;
+
+    .ant-card-body {
+      padding: 22px;
+    }
+  }
+}

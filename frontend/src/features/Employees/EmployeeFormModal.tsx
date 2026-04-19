@@ -1,0 +1,179 @@
+import React, { useEffect } from "react";
+import { Modal, Form, Input, DatePicker, Button, Spin, Select } from "antd";
+import dayjs from "dayjs";
+import { useService } from "@contexts/ServiceContext";
+import { useMessage } from "@contexts/MessageContext";
+import type {
+  CreateEmployeeRequest,
+  UpdateEmployeeRequest,
+  Employee,
+} from "@app/services/EmployeeService";
+
+interface EmployeeFormModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  loading?: boolean;
+  employee?: Employee;
+}
+
+const EmployeeFormModal: React.FC<EmployeeFormModalProps> = ({
+  visible,
+  onClose,
+  onSuccess,
+  employee,
+}) => {
+  const [form] = Form.useForm();
+  const { employee: employeeService } = useService();
+  const { success: successMsg, error: errorMsg } = useMessage();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const isEditMode = !!employee;
+
+  useEffect(() => {
+    if (visible && employee) {
+      form.setFieldsValue({
+        employee_no: employee.employee_no,
+        employee_name: employee.employee_name,
+        date_of_birth: dayjs(employee.date_of_birth),
+        status: employee.status,
+      });
+    } else if (visible) {
+      form.resetFields();
+    }
+  }, [visible, employee, form]);
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setIsSubmitting(true);
+
+      if (isEditMode && employee) {
+        const payload: UpdateEmployeeRequest = {
+          employee_no: values.employee_no,
+          employee_name: values.employee_name,
+          date_of_birth: values.date_of_birth.format("YYYY-MM-DD"),
+          status: values.status,
+        };
+        await employeeService.updateEmployee(employee.id, payload);
+        successMsg("Employee updated successfully!");
+      } else {
+        const payload: CreateEmployeeRequest = {
+          employee_no: values.employee_no,
+          employee_name: values.employee_name,
+          date_of_birth: values.date_of_birth.format("YYYY-MM-DD"),
+          status: values.status,
+        };
+        await employeeService.createEmployee(payload);
+        successMsg("Employee created successfully!");
+      }
+
+      form.resetFields();
+      onClose();
+      onSuccess();
+    } catch (error: any) {
+      errorMsg(
+        error.message ||
+          `Failed to ${isEditMode ? "update" : "create"} employee`
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal
+      title={isEditMode ? "Edit Employee" : "Create New Employee"}
+      open={visible}
+      onCancel={onClose}
+      footer={null}
+      destroyOnClose
+    >
+      <Spin spinning={isSubmitting}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          initialValues={{ status: "active" }}
+          style={{ marginTop: 24 }}
+        >
+          <Form.Item
+            label="Employee No"
+            name="employee_no"
+            rules={[
+              {
+                required: true,
+                message: "Please enter employee number",
+              },
+              {
+                pattern: /^[A-Z0-9]+$/,
+                message:
+                  "Employee number must contain only uppercase letters and numbers",
+              },
+            ]}
+          >
+            <Input placeholder="e.g., EMP001" />
+          </Form.Item>
+
+          <Form.Item
+            label="Employee Name"
+            name="employee_name"
+            rules={[
+              {
+                required: true,
+                message: "Please enter employee name",
+              },
+              {
+                min: 2,
+                message: "Name must be at least 2 characters long",
+              },
+            ]}
+          >
+            <Input placeholder="e.g., John Doe" />
+          </Form.Item>
+
+          <Form.Item
+            label="Date of Birth"
+            name="date_of_birth"
+            rules={[
+              {
+                required: true,
+                message: "Please select date of birth",
+              },
+            ]}
+          >
+            <DatePicker
+              style={{ width: "100%" }}
+              disabledDate={(current) => {
+                return current && current > dayjs().endOf("day");
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[{ required: true, message: "Please select status" }]}
+          >
+            <Select
+              options={[
+                { label: "Active", value: "active" },
+                { label: "Inactive", value: "inactive" },
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
+            <Button onClick={onClose} style={{ marginRight: 8 }}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
+              {isEditMode ? "Update" : "Create"}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Spin>
+    </Modal>
+  );
+};
+
+export default EmployeeFormModal;

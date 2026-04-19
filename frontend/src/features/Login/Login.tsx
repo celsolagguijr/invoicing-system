@@ -5,16 +5,35 @@ import {
   LoginOutlined,
   UserAddOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Input, Row, Col, Card, Alert, Flex } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Card,
+  Alert,
+  Flex,
+  Space,
+  Typography,
+} from "antd";
 import Page from "@components/Page";
 import useLogin from "./useLogin";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import "./styles.less";
+
+const { Title, Text } = Typography;
+
+interface LoginFormValues {
+  username: string;
+  password: string;
+}
 
 const Login: React.FC = () => {
   const { login, isLoading, error } = useLogin();
   const navigate = useNavigate();
+  const today = dayjs().format("dddd, MMMM D, YYYY");
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: LoginFormValues) => {
     login({
       username: data.username,
       password: data.password,
@@ -27,63 +46,78 @@ const Login: React.FC = () => {
 
   return (
     <Page title="Login">
-      <Row
-        justify="center"
-        align="middle"
-        style={{ minHeight: "100vh", padding: "20px" }}
-      >
-        <Col xs={24} sm={18} md={12} lg={8}>
-          <Card title="Sign In">
-            <Form name="login" onFinish={onSubmit}>
-              {error !== "" && (
-                <Form.Item name="alert">
-                  <Alert message={error} type="error" showIcon />
-                </Form.Item>
-              )}
+      <div className="login-page">
+        <div className="login-glow login-glow-left" />
+        <div className="login-glow login-glow-right" />
 
-              <Form.Item
-                name="username"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your Email",
-                  },
-                ]}
-              >
-                <Input
-                  prefix={<UserOutlined />}
-                  placeholder="Email"
-                  type="email"
-                  size="large"
-                />
-              </Form.Item>
-              <Form.Item
-                name="password"
-                rules={[
-                  { required: true, message: "Please input your Password" },
-                ]}
-              >
-                <Input
-                  prefix={<LockOutlined />}
-                  type="password"
-                  placeholder="Password"
-                  size="large"
-                />
-              </Form.Item>
+        <div className="login-form-panel">
+          <Card className="login-card" bordered={false}>
+            <Space direction="vertical" size={16} style={{ width: "100%" }}>
+              <div>
+                <div className="login-form-brand">
+                  <img
+                    src="/logo.png"
+                    alt="GH Caregroup Services"
+                    className="login-form-brand-logo"
+                  />
+                  <Text className="login-form-brand-name">
+                    GH CAREGROUP SERVICES
+                  </Text>
+                </div>
+                <Text className="login-date">{today}</Text>
+                <Title level={2} className="login-title">
+                  Sign In
+                </Title>
+                <Text className="login-subtitle">
+                  Welcome back. Please enter your credentials to continue.
+                </Text>
+              </div>
 
-              <Form.Item>
-                <Flex justify="end" gap="1em">
-                  <Button
-                    htmlType="button"
+              <Form<LoginFormValues>
+                name="login"
+                onFinish={onSubmit}
+                layout="vertical"
+              >
+                {error !== "" && (
+                  <Form.Item name="alert">
+                    <Alert message={error} type="error" showIcon />
+                  </Form.Item>
+                )}
+
+                <Form.Item
+                  label="Email"
+                  name="username"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your Email",
+                    },
+                  ]}
+                >
+                  <Input
+                    prefix={<UserOutlined />}
+                    placeholder="you@example.com"
+                    type="email"
                     size="large"
-                    variant="text"
-                    iconPosition="end"
-                    loading={isLoading}
-                    icon={<UserAddOutlined />}
-                    onClick={handleRegister}
-                  >
-                    Create account
-                  </Button>
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Password"
+                  name="password"
+                  rules={[
+                    { required: true, message: "Please input your Password" },
+                  ]}
+                >
+                  <Input
+                    prefix={<LockOutlined />}
+                    type="password"
+                    placeholder="Enter your password"
+                    size="large"
+                  />
+                </Form.Item>
+
+                <Form.Item style={{ marginBottom: 8 }}>
                   <Button
                     type="primary"
                     htmlType="submit"
@@ -91,15 +125,32 @@ const Login: React.FC = () => {
                     icon={<LoginOutlined />}
                     iconPosition="end"
                     loading={isLoading}
+                    block
                   >
                     Sign In
                   </Button>
-                </Flex>
-              </Form.Item>
-            </Form>
+                </Form.Item>
+
+                <Form.Item style={{ marginBottom: 0 }}>
+                  <Flex justify="center">
+                    <Button
+                      htmlType="button"
+                      size="large"
+                      variant="text"
+                      iconPosition="end"
+                      loading={isLoading}
+                      icon={<UserAddOutlined />}
+                      onClick={handleRegister}
+                    >
+                      Create account
+                    </Button>
+                  </Flex>
+                </Form.Item>
+              </Form>
+            </Space>
           </Card>
-        </Col>
-      </Row>
+        </div>
+      </div>
     </Page>
   );
 };

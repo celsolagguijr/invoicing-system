@@ -8,7 +8,7 @@ export interface IGuestRouteProps {
 const GuestRoute: React.FC<IGuestRouteProps> = (props: IGuestRouteProps) => {
   const { isValid } = useAuth();
 
-  return isValid ? <Navigate to="/user-profile" /> : props.children;
+  return isValid ? <Navigate to="/dashboard" /> : props.children;
 };
 
 export default GuestRoute;

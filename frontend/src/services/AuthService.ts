@@ -1,7 +1,4 @@
-import User, {
-  UserDetails,
-  UserRegistration,
-} from "@app/shared/types/models/User";
+import { UserDetails, UserRegistration } from "@app/shared/types/models/User";
 import axios from "@app/shared/utils/axios";
 
 class AuthService {

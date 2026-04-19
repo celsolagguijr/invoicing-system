@@ -1,0 +1,179 @@
+// Layout component variables
+@primary-color: #1890ff;
+@light-bg: #fff;
+@light-secondary-bg: #1890ff;
+@light-border: #f0f0f0;
+@light-text: #fff;
+
+// Topbar styles
+.topbar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+  padding: 0 24px;
+  background: @light-secondary-bg;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+}
+
+// Sidebar logo
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 64px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: @light-secondary-bg;
+
+  .sidebar-logo-image {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  &.collapsed {
+    justify-content: center;
+    padding: 0;
+
+    .sidebar-logo-image {
+      height: 28px;
+    }
+  }
+}
+
+// Scrollbar styling
+.ant-layout-sider {
+  overflow-y: auto;
+  padding-top: 0;
+
+  // Menu styling
+  .ant-menu {
+    background: transparent;
+    border-right: none;
+
+    .ant-menu-item {
+      color: #fff !important;
+      background: transparent !important;
+
+      &:hover {
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      &.ant-menu-item-selected {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: #fff !important;
+
+        &::after {
+          border-right-color: #fff !important;
+        }
+      }
+    }
+
+    .ant-menu-submenu-title {
+      color: #fff !important;
+
+      &:hover {
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+    }
+
+    .anticon {
+      color: #fff !important;
+    }
+
+    .ant-menu-submenu-title {
+      color: #fff !important;
+
+      &:hover {
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+    }
+
+    // Child menu items styling
+    .ant-menu-submenu-inline {
+      .ant-menu-item {
+        color: #fff !important;
+        padding-left: 48px !important;
+        background: transparent !important;
+
+        &:hover {
+          color: #fff !important;
+          background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        &.ant-menu-item-selected {
+          background: rgba(255, 255, 255, 0.2) !important;
+          color: #fff !important;
+        }
+      }
+    }
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// Content area
+.ant-layout-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f5f5f5;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .topbar-header {
+    padding: 0 12px;
+
+    h1 {
+      font-size: 14px;
+    }
+  }
+}

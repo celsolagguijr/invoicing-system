@@ -1,0 +1,36 @@
+import { useMessage } from "@app/contexts/MessageContext";
+import { useService } from "@contexts/ServiceContext";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import type { ApiResponse } from "../../shared/types/axios";
+import { Employee } from "@app/services/EmployeeService";
+
+const useEmployees = () => {
+  const { error: errorMsg } = useMessage();
+  const { employee } = useService();
+
+  const { data, isLoading, error, refetch } = useQuery<
+    ApiResponse<Employee[]>,
+    AxiosError
+  >({
+    queryKey: ["employees"],
+    queryFn: async () => {
+      const response = await employee.getEmployees();
+      return response.data as ApiResponse<Employee[]>;
+    },
+    retry: 1,
+  });
+
+  if (error) {
+    errorMsg(error.message || "Failed to fetch employees");
+  }
+
+  return {
+    error,
+    employees: data?.data || [],
+    refetch,
+    isLoading,
+  };
+};
+
+export default useEmployees;

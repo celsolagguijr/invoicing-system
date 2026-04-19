@@ -13,8 +13,32 @@ const Login = lazy(
 const Register = lazy(
   () => import("@features/Register")
 ) as React.LazyExoticComponent<() => JSX.Element>;
+const Dashboard = lazy(
+  () => import("@features/Dashboard")
+) as React.LazyExoticComponent<() => JSX.Element>;
+const Employees = lazy(
+  () => import("@features/Employees")
+) as React.LazyExoticComponent<() => JSX.Element>;
+const Clients = lazy(
+  () => import("@features/Clients")
+) as React.LazyExoticComponent<() => JSX.Element>;
+const Timelogs = lazy(
+  () => import("@features/Timelogs")
+) as React.LazyExoticComponent<() => JSX.Element>;
+const Invoices = lazy(
+  () => import("@features/Invoices")
+) as React.LazyExoticComponent<() => JSX.Element>;
+const InvoiceDetails = lazy(
+  () => import("@features/Invoices/InvoiceDetails")
+) as React.LazyExoticComponent<() => JSX.Element>;
+const EmployeeTimelogsReport = lazy(
+  () => import("@features/EmployeeTimelogsReport")
+) as React.LazyExoticComponent<() => JSX.Element>;
+const OverallTimelogSummaryReport = lazy(
+  () => import("@features/OverallTimelogSummaryReport")
+) as React.LazyExoticComponent<() => JSX.Element>;
 const NotFound = lazy(
-  () => import("@features/Login")
+  () => import("@features/NotFound")
 ) as React.LazyExoticComponent<() => JSX.Element>;
 
 export type RouteType = Omit<RouteProps, "children"> & {
@@ -23,6 +47,16 @@ export type RouteType = Omit<RouteProps, "children"> & {
 };
 
 const appRoutes: RouteType[] = [
+  {
+    path: "/",
+    isProtected: true,
+    element: <Dashboard />,
+  },
+  {
+    path: "dashboard",
+    isProtected: true,
+    element: <Dashboard />,
+  },
   {
     path: "login",
     element: <Login />,
@@ -37,6 +71,41 @@ const appRoutes: RouteType[] = [
     path: "user-profile",
     isProtected: true,
     element: <UserProfile />,
+  },
+  {
+    path: "employees",
+    isProtected: true,
+    element: <Employees />,
+  },
+  {
+    path: "clients",
+    isProtected: true,
+    element: <Clients />,
+  },
+  {
+    path: "timelogs",
+    isProtected: true,
+    element: <Timelogs />,
+  },
+  {
+    path: "invoices",
+    isProtected: true,
+    element: <Invoices />,
+  },
+  {
+    path: "invoices/:id",
+    isProtected: true,
+    element: <InvoiceDetails />,
+  },
+  {
+    path: "reports/employee-timelogs",
+    isProtected: true,
+    element: <EmployeeTimelogsReport />,
+  },
+  {
+    path: "reports/overall-timelog-summary",
+    isProtected: true,
+    element: <OverallTimelogSummaryReport />,
   },
   {
     path: "*",

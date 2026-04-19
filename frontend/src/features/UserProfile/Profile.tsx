@@ -1,93 +1,57 @@
 import React from "react";
-import { Button, Card, Descriptions, Flex, Row, Skeleton } from "antd";
-import type { DescriptionsProps } from "antd";
+import { Spin, Card, Row, Col } from "antd";
 import Page from "@app/shared/components/Page";
-import UserProfile from "./useUserProfile";
-import { LogoutOutlined, ReloadOutlined } from "@ant-design/icons";
+import { Layout } from "@components/Layout";
+import useUserProfile from "./useUserProfile";
 
 const Profile: React.FC = () => {
-  const { data, isLoading, refetch, handleLogout } = UserProfile();
+  const { data, isLoading, handleLogout } = useUserProfile();
 
-  const borderedItems: DescriptionsProps["items"] = [
-    {
-      key: "1",
-      label: "User ID",
-      children: data?.id,
-    },
-    {
-      key: "2",
-      label: "First Name",
-      children: data?.firstName,
-    },
-    {
-      key: "3",
-      label: "Last Name",
-      children: data?.lastName,
-    },
-    {
-      key: "4",
-      label: "Date of Birth",
-      children: data?.dateOfBirth,
-    },
-    {
-      key: "5",
-      label: "Age",
-      children: data?.age,
-    },
-    {
-      key: "6",
-      label: "Email",
-      children: data?.username,
-    },
-
-    {
-      key: "7",
-      label: "Password",
-      children: data?.password,
-    },
-  ];
-
-  function handleReload() {
-    refetch();
-  }
+  const ProfileField: React.FC<{ label: string; value: any }> = ({
+    label,
+    value,
+  }) => (
+    <div style={{ marginBottom: "16px" }}>
+      <div style={{ fontSize: "12px", color: "#999", marginBottom: "4px" }}>
+        {label}
+      </div>
+      <div style={{ fontSize: "16px", fontWeight: "500" }}>{value || "-"}</div>
+    </div>
+  );
 
   return (
-    <Page title="User Profile">
-      <Row
-        justify="center"
-        align="middle"
-        style={{ minHeight: "100vh", padding: "20px", width: "100%" }}
-      >
-        <Card style={{ width: "80%" }}>
-          <Skeleton loading={isLoading}>
-            <Descriptions
-              layout="vertical"
-              title="User Profile"
-              extra={
-                <Flex gap={"1em"}>
-                  <Button
-                    color="green"
-                    onClick={handleReload}
-                    icon={<ReloadOutlined />}
-                    loading={isLoading}
-                  >
-                    Reload
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={handleLogout}
-                    icon={<LogoutOutlined />}
-                  >
-                    Logout
-                  </Button>
-                </Flex>
-              }
-              items={borderedItems}
-            />
-          </Skeleton>
-        </Card>
-      </Row>
-    </Page>
+    <Layout
+      onLogout={handleLogout}
+      userName={`${data?.firstName} ${data?.lastName}`}
+    >
+      <Page title="User Profile" headerTitle="User Profile">
+        <Spin spinning={isLoading} tip="Loading profile...">
+          <Card style={{ maxWidth: "600px" }}>
+            <Row gutter={[32, 32]}>
+              <Col span={12}>
+                <ProfileField label="First Name" value={data?.firstName} />
+              </Col>
+              <Col span={12}>
+                <ProfileField label="Last Name" value={data?.lastName} />
+              </Col>
+              <Col span={12}>
+                <ProfileField label="Email" value={data?.username} />
+              </Col>
+              <Col span={12}>
+                <ProfileField
+                  label="Date of Birth"
+                  value={
+                    data?.dateOfBirth
+                      ? new Date(data.dateOfBirth).toLocaleDateString()
+                      : "-"
+                  }
+                />
+              </Col>
+            </Row>
+          </Card>
+        </Spin>
+      </Page>
+    </Layout>
   );
 };
 

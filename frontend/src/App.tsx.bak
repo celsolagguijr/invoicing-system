@@ -1,0 +1,52 @@
+import { Suspense } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ConfigProvider } from "antd";
+import defaultTheme from "@themes/default";
+import { darkTheme, lightTheme } from "@themes/darkTheme";
+import "@assets/styles/global.less";
+import Loading from "@components/Loading";
+import Routers from "@routes/AppRoutes";
+import { ServiceProvider } from "@contexts/ServiceContext";
+import { AuthProvider } from "@contexts/AuthContext";
+import { ThemeProvider, useTheme } from "@contexts/ThemeContext";
+import { ErrorBoundary } from "react-error-boundary";
+import FallBackError from "@features/FallBackError";
+import { Navigate } from "react-router-dom";
+import MessageProvider from "@contexts/MessageContext";
+
+const queryClient = new QueryClient();
+
+const AppContent: React.FC = () => {
+  const { theme } = useTheme();
+
+  return (
+    <ConfigProvider
+      theme={theme === "dark" ? { ...darkTheme } : { ...lightTheme }}
+    >
+      <Suspense fallback={<Loading />}>
+        <QueryClientProvider client={queryClient}>
+          <MessageProvider>
+            <AuthProvider>
+              <ServiceProvider>
+                <ErrorBoundary
+                  FallbackComponent={FallBackError}
+                  onReset={() => <Navigate to="/user-registration" />}
+                >
+                  <Routers />
+                </ErrorBoundary>
+              </ServiceProvider>
+            </AuthProvider>
+          </MessageProvider>
+        </QueryClientProvider>
+      </Suspense>
+    </ConfigProvider>
+  );
+};
+
+const App: React.FC = () => (
+  <ThemeProvider>
+    <AppContent />
+  </ThemeProvider>
+);
+
+export default App;
