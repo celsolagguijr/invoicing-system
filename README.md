@@ -1,82 +1,144 @@
-# 📘 Project Setup Guide
+# Invoicing System - Beginner Run Guide
 
-## 🛠 Tech Stack
+This guide is written for beginners and shows exactly how to run the full system (backend + frontend) on your local machine.
 
-- **Backend:** `TypeScript`, `Express.js`, `TypeORM`, `MySQL`, `nodemon`  
-- **Frontend:** `React.js`, `Ant Design`, `TypeScript`, `axios`,`React Query` `Vite`
+## 1. Prerequisites
 
----
+Install these first:
 
-## 🚀 Getting Started
+1. Node.js `18+` (recommended: latest LTS)
+2. npm (comes with Node.js)
+3. Git
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/celsolagguijr/user-registration.git
-cd user-registration
-```
-
-
-### 2. Set Up the Database
-Before running the app, create the MySQL database:
-
-```sql
-
-CREATE DATABASE IF NOT EXISTS app;
-
-DROP TABLE IF EXISTS `users`;
-
-CREATE TABLE `users` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `firstName` varchar(150) NOT NULL,
-  `lastName` varchar(50) NOT NULL,
-  `dateOfBirth` date NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `username` varchar(150) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 
-  DEFAULT CHARSET=utf8mb4 
-  COLLATE=utf8mb4_0900_ai_ci;
-
-```
-
-
-### 3. Install Dependencies
-Run the following commands in both the backend and frontend directories:
+Check versions:
 
 ```bash
-    npm install
+node -v
+npm -v
+git --version
 ```
 
+## 2. Clone The Project
 
-### 4. Configure Environment Variables
-A pre-configured `.env` file is already included in the project.
+```bash
+git clone https://github.com/celsolagguijr/invoicing-system.git
+cd invoicing-system
+```
 
-```yml
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=app
-DB_USERNAME=root 
-DB_PASSWORD= 
+## 3. Install Dependencies
 
+Install backend dependencies:
+
+```bash
+cd backend
+npm install
+```
+
+Install frontend dependencies:
+
+```bash
+cd ../frontend
+npm install
+```
+
+## 4. Configure Backend Environment
+
+Go to backend folder:
+
+```bash
+cd ../backend
+```
+
+Create `.env` file (if not yet created):
+
+```bash
+cp .env.example .env
+```
+
+Update at least these values in `.env`:
+
+```env
 SERVER_PORT=3000
+NODE_ENV=development
+DATABASE_URL=./data/mydb.sqlite
+JWT_SECRET_KEY=your-secret-key
+JWT_EXPIRES_IN=3600
+BCRYPT_SALT_ROUND=5
+LOG_LEVEL=info
 ```
 
-You only need to update the following:
+Notes:
 
-- Database port — default: 3306
+1. This project uses `SQLite` for local development.
+2. You do not need to create a MySQL database.
 
-- Backend server port — default: 3000
+## 5. Run Backend
 
-- Frontend dev server port — default: 5173
+From `backend` folder:
 
+```bash
+npm run dev
+```
 
- ### 5. Run the App
+Keep this terminal open.
 
- ```bash
-    # In the backend folder
-    npm run dev
+Expected result: backend runs on `http://localhost:3000` (or your configured `SERVER_PORT`).
 
-    # In the frontend folder
-    npm start
- ```
+## 6. Run Frontend
+
+Open a second terminal:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Keep this terminal open too.
+
+Expected result: frontend runs on `http://localhost:5173`.
+
+## 7. Open The App
+
+In your browser, open:
+
+```text
+http://localhost:5173
+```
+
+## 8. Build Commands (Optional)
+
+Backend build:
+
+```bash
+cd backend
+npm run build
+```
+
+Frontend build:
+
+```bash
+cd frontend
+npm run build
+```
+
+## 9. Common Issues
+
+1. `npm run dev` fails in frontend:
+  Ensure backend is running first and check that `.env` is configured in backend.
+
+2. Port already in use:
+  Change `SERVER_PORT` in backend `.env`, then restart backend.
+
+3. Token/login issues:
+  Clear browser local storage and login again.
+
+4. Database/schema errors after new fields:
+  Stop backend, restart backend so TypeORM sync can update SQLite schema.
+
+## 10. Project Structure
+
+```text
+invoicing-system/
+  backend/   # API server, SQLite, PDF generation
+  frontend/  # React + Vite web app
+```
