@@ -41,7 +41,7 @@ export class InvoiceDetail {
   @JoinColumn({ name: "employee_id" })
   employee: Employee;
 
-  @Column({ type: "datetime", nullable: false })
+  @Column({ type: "date", nullable: false })
   date: Date;
 
   @Column({ type: "decimal", precision: 10, scale: 2, nullable: false })

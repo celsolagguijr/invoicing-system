@@ -28,16 +28,16 @@ export class Invoice {
   @JoinColumn({ name: "client_id" })
   client: Client;
 
-  @Column({ type: "datetime", nullable: false })
+  @Column({ type: "date", nullable: false })
   invoice_date: Date;
 
-  @Column({ type: "datetime", nullable: false })
+  @Column({ type: "date", nullable: false })
   due_date: Date;
 
-  @Column({ type: "datetime", nullable: false })
+  @Column({ type: "date", nullable: false })
   coverage_start: Date;
 
-  @Column({ type: "datetime", nullable: false })
+  @Column({ type: "date", nullable: false })
   coverage_end: Date;
 
   @Column({ type: "decimal", precision: 10, scale: 2, nullable: false })

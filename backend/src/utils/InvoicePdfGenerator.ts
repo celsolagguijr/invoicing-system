@@ -2,8 +2,13 @@ import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
 import { Invoice } from "../entities/Invoice";
+import { toDateString } from "./dateUtils";
 
-const formatDate = (date: Date): string => {
+const formatDate = (date: Date | string): string => {
+  if (typeof date === "string") {
+    const [year, month, day] = date.split("-");
+    return `${day}-${month}-${year}`;
+  }
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
@@ -245,7 +250,7 @@ export const generateInvoicePdfBuffer = (invoice: Invoice): Promise<Buffer> => {
         .fillColor("#111827")
         .font("Helvetica")
         .fontSize(9)
-        .text(formatDate(new Date(detail.date)), left + 8, y + 6, { width: 72 })
+        .text(formatDate(toDateString(detail.date as unknown as Date | string)), left + 8, y + 6, { width: 72 })
         .text(detail.employee?.employee_name || "-", left + 84, y + 6, {
           width: 150,
         })

@@ -16,6 +16,7 @@ import {
   EmployeeCustomerTransactionIdParamSchema,
   EmployeeCustomerTransactionDateRangeQuerySchema,
 } from "../validators/EmployeeCustomerTransactionValidator";
+import { toDateString } from "../utils/dateUtils";
 
 class EmployeeCustomerTransactionService {
   private readonly transactionRepository;
@@ -121,7 +122,7 @@ class EmployeeCustomerTransactionService {
       customer_id: validatedData.customer_id,
       working_hours: validatedData.working_hours,
       ot_working_hours: validatedData.ot_working_hours,
-      date: new Date(validatedData.date),
+      date: toDateString(validatedData.date) as unknown as Date,
       remarks: validatedData.remarks ?? null,
     });
     return await this.transactionRepository.save(newTransaction);
@@ -238,7 +239,7 @@ class EmployeeCustomerTransactionService {
         customer_id: t.customer_id,
         working_hours: t.working_hours,
         ot_working_hours: t.ot_working_hours,
-        date: new Date(t.date),
+        date: toDateString(t.date) as unknown as Date,
         remarks: t.remarks ?? null,
       }),
     );
@@ -301,7 +302,7 @@ class EmployeeCustomerTransactionService {
       updateData.ot_working_hours = validatedData.ot_working_hours;
     }
     if (validatedData.date) {
-      updateData.date = new Date(validatedData.date);
+      updateData.date = toDateString(validatedData.date) as unknown as Date;
     }
     if (validatedData.remarks !== undefined) {
       updateData.remarks = validatedData.remarks;
