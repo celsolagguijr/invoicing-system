@@ -16,6 +16,7 @@ import {
   InvoiceSearchQuerySchema,
   InvoiceUpdateSchema,
 } from "../validators/InvoiceValidator";
+import { toDateString } from "../utils/dateUtils";
 
 class InvoiceService {
   private readonly invoiceRepository;
@@ -150,20 +151,20 @@ class InvoiceService {
     );
     const totalAmount =
       hourlyRate * totalWorkingHours + otHourlyRate * totalOtWorkingHours;
-    const invoiceDate = validatedData.invoice_date
-      ? new Date(validatedData.invoice_date)
-      : new Date();
-    const dueDate = validatedData.due_date
-      ? new Date(validatedData.due_date)
-      : new Date();
+    const invoiceDateStr = validatedData.invoice_date
+      ? validatedData.invoice_date
+      : this.formatDateOnly(new Date());
+    const dueDateStr = validatedData.due_date
+      ? validatedData.due_date
+      : this.formatDateOnly(new Date());
 
     const invoiceEntity = this.invoiceRepository.create({
       invoice_no: this.generateTemporaryInvoiceNumber(),
       client_id: validatedData.client_id,
-      invoice_date: invoiceDate,
-      due_date: dueDate,
-      coverage_start: new Date(coverageStart),
-      coverage_end: new Date(coverageEnd),
+      invoice_date: invoiceDateStr as unknown as Date,
+      due_date: dueDateStr as unknown as Date,
+      coverage_start: coverageStart as unknown as Date,
+      coverage_end: coverageEnd as unknown as Date,
       hourly_rate: hourlyRate,
       ot_hourly_rate: otHourlyRate,
       total_working_hours: Number(totalWorkingHours.toFixed(2)),
@@ -172,7 +173,7 @@ class InvoiceService {
         this.invoiceDetailRepository.create({
           client_id: validatedData.client_id,
           employee_id: transaction.employee_id,
-          date: new Date(transaction.date),
+          date: toDateString(transaction.date as unknown as Date | string) as unknown as Date,
           billed_hours: Number(transaction.working_hours),
           billed_ot_hours: Number(transaction.ot_working_hours || 0),
           remarks: transaction.remarks ?? null,
@@ -181,7 +182,7 @@ class InvoiceService {
     });
 
     const saved = await this.invoiceRepository.save(invoiceEntity);
-    saved.invoice_no = this.generateInvoiceNumber(invoiceDate, saved.id);
+    saved.invoice_no = this.generateInvoiceNumber(invoiceDateStr, saved.id);
     await this.invoiceRepository.save(saved);
 
     return await this.getInvoiceById(saved.id);
@@ -210,21 +211,20 @@ class InvoiceService {
     }
 
     if (validatedData.invoice_date) {
-      invoice.invoice_date = new Date(validatedData.invoice_date);
+      invoice.invoice_date = validatedData.invoice_date as unknown as Date;
     }
 
     if (validatedData.due_date) {
-      invoice.due_date = new Date(validatedData.due_date);
+      invoice.due_date = validatedData.due_date as unknown as Date;
     }
 
     if (validatedData.coverage_start) {
-      invoice.coverage_start = new Date(validatedData.coverage_start);
+      invoice.coverage_start = validatedData.coverage_start as unknown as Date;
     }
 
     if (validatedData.coverage_end) {
-      invoice.coverage_end = new Date(validatedData.coverage_end);
+      invoice.coverage_end = validatedData.coverage_end as unknown as Date;
     }
-
     if (validatedData.hourly_rate !== undefined) {
       invoice.hourly_rate = validatedData.hourly_rate;
     }
@@ -251,7 +251,7 @@ class InvoiceService {
           invoice_id: id,
           client_id: invoice.client_id,
           employee_id: detail.employee_id,
-          date: new Date(detail.date),
+          date: toDateString(detail.date) as unknown as Date,
           billed_hours: detail.billed_hours,
           billed_ot_hours: detail.billed_ot_hours,
           remarks: detail.remarks ?? null,
@@ -337,10 +337,8 @@ class InvoiceService {
     return `TMP-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
   }
 
-  private generateInvoiceNumber(invoiceDate: Date, id: number): string {
-    const year = invoiceDate.getFullYear().toString();
-    const month = String(invoiceDate.getMonth() + 1).padStart(2, "0");
-    const day = String(invoiceDate.getDate()).padStart(2, "0");
+  private generateInvoiceNumber(invoiceDate: string, id: number): string {
+    const [year, month, day] = invoiceDate.split("-");
     const runningId = String(id).padStart(4, "0");
     return `INV-${year}${month}${day}-${runningId}`;
   }
