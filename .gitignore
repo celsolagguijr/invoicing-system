@@ -4,6 +4,3 @@
 
 # Or if the structure changes, you can use a wildcard to ignore all node_modules
 **/node_modules/
-
-# Ignore build output
-/backend/dist/
