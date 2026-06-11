@@ -751,7 +751,7 @@ const useTimelogs = (): UseTimelogsReturn => {
         !Number.isInteger(entry.customer_id) ||
         entry.customer_id <= 0 ||
         !Number.isFinite(entry.working_hours) ||
-        entry.working_hours <= 0 ||
+        entry.working_hours < 0 ||
         !Number.isFinite(entry.ot_working_hours) ||
         entry.ot_working_hours < 0 ||
         !entry.date
@@ -759,7 +759,7 @@ const useTimelogs = (): UseTimelogsReturn => {
 
     if (hasInvalidRows) {
       errorMsg(
-        "Please select employee/client, set a valid date, and enter working hours greater than 0"
+        "Please select an client, set a valid date, and enter non-negative working hours for all rows.."
       );
       return;
     }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Button, Spin, Space } from "antd";
+import { Table, Button, Spin, Space, Input } from "antd";
 import { ReloadOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 import Page from "@app/shared/components/Page";
@@ -10,6 +10,7 @@ import type { Client } from "@app/services/ClientService";
 
 const Clients: React.FC = () => {
   const { clients, isLoading, refetch } = useClients();
+  const [searchQuery, setSearchQuery] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | undefined>();
 
@@ -27,6 +28,17 @@ const Clients: React.FC = () => {
     setIsModalVisible(false);
     setSelectedClient(undefined);
   };
+
+  const filteredClients = clients.filter((client) => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return true;
+    }
+
+    return [client.name, client.owner, client.address1, client.address2]
+      .filter(Boolean)
+      .some((field) => field.toLowerCase().includes(query));
+  });
 
   const columns: TableColumnsType<Client> = [
     {
@@ -107,7 +119,14 @@ const Clients: React.FC = () => {
         title="Clients"
         headerTitle="Clients"
         headerAction={
-          <Space>
+          <Space wrap>
+            <Input.Search
+              placeholder="Search clients"
+              allowClear
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: 280 }}
+            />
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -130,7 +149,7 @@ const Clients: React.FC = () => {
         <Spin spinning={isLoading} tip="Loading clients...">
           <Table
             columns={columns}
-            dataSource={clients}
+            dataSource={filteredClients}
             rowKey="id"
             pagination={{ pageSize: 10 }}
             scroll={{ x: 1400 }}
