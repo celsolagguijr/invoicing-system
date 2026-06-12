@@ -8,6 +8,7 @@ import { Invoice } from "../entities/Invoice";
 import { InvoiceDetail } from "../entities/InvoiceDetail";
 import dotenv from "dotenv";
 import logger from "./logger";
+import { InvoiceAdjustment } from "../entities/InvoiceAdjustment";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ export const AppDataSource = new DataSource({
     EmployeeCustomerTransaction,
     Invoice,
     InvoiceDetail,
+    InvoiceAdjustment,
   ],
 });
 

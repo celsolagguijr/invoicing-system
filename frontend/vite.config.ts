@@ -23,9 +23,12 @@ export default defineConfig({
   },
   plugins: [react(), tsconfigPaths()],
   server: {
+    host: "0.0.0.0",
+    // optional: set a fixed port if you want (defaults to 5173)
+    // port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:8081",
+        target: "http://localhost:8093",
       },
     },
   },

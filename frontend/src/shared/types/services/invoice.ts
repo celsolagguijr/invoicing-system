@@ -19,7 +19,11 @@ export interface InvoiceItem {
   hourly_rate: number;
   ot_hourly_rate: number;
   total_working_hours: number;
+  total_ot_working_hours: number;
   total_amount: number;
+  total_additions: number;
+  total_deductions: number;
+  grant_total: number;
   client: InvoiceClient;
 }
 
@@ -46,10 +50,24 @@ export interface InvoiceDetailItem {
   employee: InvoiceDetailEmployee;
 }
 
+export interface InvoiceAdjustment {
+  id: number;
+  type: "ADDITIONAL" | "DEDUCTION";
+  invoice_id: number;
+  description: string;
+  quantity: number;
+  price: number;
+  total: number;
+  sort: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface InvoiceDetails extends InvoiceItem {
   created_at: string;
   updated_at: string;
   invoice_details: InvoiceDetailItem[];
+  invoice_adjustments: InvoiceAdjustment[];
 }
 
 export interface SearchInvoiceParams {
@@ -58,6 +76,33 @@ export interface SearchInvoiceParams {
   invoice_date?: string;
   invoice_date_from?: string;
   invoice_date_to?: string;
+}
+
+export interface InvoiceAdjustmentTableDetails {
+  id?: number;
+  invoiceId: number;
+  rowKey: string;
+  type: "ADDITIONAL" | "DEDUCTION";
+  description: string;
+  quantity: number;
+  price: number;
+  sort: number;
+  isDeleted: boolean;
+}
+
+export interface AdjustmentDetails {
+  id?: number;
+  type: "ADDITIONAL" | "DEDUCTION";
+  description: string;
+  quantity: number;
+  price: number;
+  sort: number;
+  is_deleted: boolean;
+}
+
+export interface InvoiceAdjustmentRequest {
+  invoice_id: number;
+  adjustments: AdjustmentDetails[];
 }
 
 export interface CreateInvoiceRequest {

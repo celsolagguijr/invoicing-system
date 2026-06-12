@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { Client } from "./Client";
 import { InvoiceDetail } from "./InvoiceDetail";
+import { InvoiceAdjustment } from "./InvoiceAdjustment";
 
 @Entity({ name: "invoices" })
 export class Invoice {
@@ -55,6 +56,15 @@ export class Invoice {
   @Column({ type: "decimal", precision: 10, scale: 2, nullable: false })
   total_working_hours: number;
 
+  @Column({
+    type: "decimal",
+    precision: 10,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
+  total_ot_working_hours: number;
+
   @Column({ type: "decimal", precision: 15, scale: 2, nullable: false })
   total_amount: number;
 
@@ -62,6 +72,20 @@ export class Invoice {
     cascade: true,
   })
   invoice_details: InvoiceDetail[];
+
+  @OneToMany(() => InvoiceAdjustment, (adjustment) => adjustment.invoice, {
+    cascade: true,
+  })
+  invoice_adjustments: InvoiceAdjustment[];
+
+  @Column({ type: "decimal", precision: 10, scale: 2, nullable: true })
+  total_additions: number;
+
+  @Column({ type: "decimal", precision: 10, scale: 2, nullable: true })
+  total_deductions: number;
+
+  @Column({ type: "decimal", precision: 10, scale: 2, nullable: true })
+  grand_total: number;
 
   @CreateDateColumn()
   created_at: Date;

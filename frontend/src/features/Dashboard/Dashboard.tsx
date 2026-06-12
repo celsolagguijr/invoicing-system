@@ -219,16 +219,6 @@ const Dashboard: React.FC = () => {
               />
             </Card>
           </Col>
-
-          <Col xs={24} sm={12} lg={6}>
-            <Card loading={isLoadingSummary}>
-              <Statistic
-                title="Revenue This Month"
-                value={formatMoney(monthRevenue)}
-                prefix={<DollarCircleOutlined />}
-              />
-            </Card>
-          </Col>
         </Row>
 
         <Row gutter={[16, 16]} style={{ marginTop: 8 }}>

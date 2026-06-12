@@ -27,7 +27,9 @@ export const EmployeeCustomerTransactionCreateSchema = z.object({
     .number()
     .int("Customer ID must be an integer")
     .positive("Customer ID must be a positive integer"),
-  working_hours: z.number().positive("Working hours must be a positive number"),
+  working_hours: z
+    .number()
+    .nonnegative("OT working hours must be a non-negative number"),
   ot_working_hours: z
     .number()
     .nonnegative("OT working hours must be a non-negative number"),
@@ -107,7 +109,7 @@ export const EmployeeCustomerTransactionUpdateSchema = z
       .optional(),
     working_hours: z
       .number()
-      .positive("Working hours must be a positive number")
+      .nonnegative("OT working hours must be a non-negative number")
       .optional(),
     ot_working_hours: z
       .number()

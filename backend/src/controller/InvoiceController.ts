@@ -6,9 +6,11 @@ import { InvoiceService } from "../services";
 import {
   CreateInvoiceRequest,
   SearchInvoiceQueryRequest,
+  UpdateInvoiceAdjustmentsRequest,
   UpdateInvoiceRequest,
 } from "../types/Invoice";
 import {
+  InvoiceAdjustmentsUpdateSchema,
   InvoiceCreateSchema,
   InvoiceIdParamSchema,
   InvoiceSearchQuerySchema,
@@ -137,6 +139,29 @@ class InvoiceController {
       return res
         .status(HttpStatus.OK)
         .json(this.responseBuilder.ok(invoice, "Invoice Updated Successfully"));
+    } catch (error) {
+      const response = handleErrors(error as Error);
+      return res.status(response.status).json(response);
+    }
+  }
+
+  async updateInvoiceAdjustments(
+    req: Request<{}, {}, UpdateInvoiceAdjustmentsRequest>,
+    res: Response<BackendResponse>,
+  ): Promise<Response> {
+    try {
+      const validatedData = InvoiceAdjustmentsUpdateSchema.parse(req.body);
+      const invoice =
+        await this.invoiceService.updateInvoiceAdjustments(validatedData);
+
+      return res
+        .status(HttpStatus.OK)
+        .json(
+          this.responseBuilder.ok(
+            invoice,
+            "Invoice Adjustments Updated Successfully",
+          ),
+        );
     } catch (error) {
       const response = handleErrors(error as Error);
       return res.status(response.status).json(response);

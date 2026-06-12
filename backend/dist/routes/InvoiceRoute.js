@@ -15,5 +15,6 @@ router.get("/invoices/:id", validateToken.validate, (req, res) => invoiceControl
 router.get("/invoices/:id/pdf", validateToken.validate, (req, res) => invoiceController.downloadInvoicePdf(req, res));
 router.post("/invoices", validateToken.validate, (req, res) => invoiceController.createInvoice(req, res));
 router.put("/invoices/:id", validateToken.validate, (req, res) => invoiceController.updateInvoice(req, res));
+router.put("/invoices/:id/adjustments", validateToken.validate, (req, res) => invoiceController.updateInvoiceAdjustments(req, res));
 router.delete("/invoices/:id", validateToken.validate, (req, res) => invoiceController.deleteInvoice(req, res));
 exports.default = router;

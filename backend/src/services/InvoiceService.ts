@@ -6,8 +6,10 @@ import { Invoice } from "../entities/Invoice";
 import { InvoiceDetail } from "../entities/InvoiceDetail";
 import { ResourceConflict, ResourceNotFound } from "../exceptions";
 import {
+  AdjustmentRequest,
   CreateInvoiceRequest,
   InvoiceSearchQueryInput,
+  UpdateInvoiceAdjustmentsRequest,
   UpdateInvoiceRequest,
 } from "../types/Invoice";
 import {
@@ -17,10 +19,13 @@ import {
   InvoiceUpdateSchema,
 } from "../validators/InvoiceValidator";
 import { toDateString } from "../utils/dateUtils";
+import { InvoiceAdjustment } from "../entities/InvoiceAdjustment";
+import { In } from "typeorm";
 
 class InvoiceService {
   private readonly invoiceRepository;
   private readonly invoiceDetailRepository;
+  private readonly invoiceAdjustmentRepository;
   private readonly employeeCustomerTransactionRepository;
   private readonly clientRepository;
   private readonly employeeRepository;
@@ -33,6 +38,8 @@ class InvoiceService {
     );
     this.clientRepository = AppDataSource.getRepository(Client);
     this.employeeRepository = AppDataSource.getRepository(Employee);
+    this.invoiceAdjustmentRepository =
+      AppDataSource.getRepository(InvoiceAdjustment);
   }
 
   async getAllInvoices(): Promise<Invoice[]> {
@@ -90,7 +97,12 @@ class InvoiceService {
 
     const invoice = await this.invoiceRepository.findOne({
       where: { id },
-      relations: ["client", "invoice_details", "invoice_details.employee"],
+      relations: [
+        "client",
+        "invoice_details",
+        "invoice_adjustments",
+        "invoice_details.employee",
+      ],
     });
 
     if (!invoice) {
@@ -167,13 +179,19 @@ class InvoiceService {
       coverage_end: coverageEnd as unknown as Date,
       hourly_rate: hourlyRate,
       ot_hourly_rate: otHourlyRate,
-      total_working_hours: Number(totalWorkingHours.toFixed(2)),
-      total_amount: Number(totalAmount.toFixed(2)),
+      total_working_hours: Number(totalWorkingHours.toFixed(4)),
+      total_ot_working_hours: Number(totalOtWorkingHours.toFixed(4)),
+      total_amount: Number(totalAmount.toFixed(4)),
+      total_additions: 0,
+      total_deductions: 0,
+      grand_total: Number(totalAmount.toFixed(4)),
       invoice_details: transactions.map((transaction) =>
         this.invoiceDetailRepository.create({
           client_id: validatedData.client_id,
           employee_id: transaction.employee_id,
-          date: toDateString(transaction.date as unknown as Date | string) as unknown as Date,
+          date: toDateString(
+            transaction.date as unknown as Date | string,
+          ) as unknown as Date,
           billed_hours: Number(transaction.working_hours),
           billed_ot_hours: Number(transaction.ot_working_hours || 0),
           remarks: transaction.remarks ?? null,
@@ -263,12 +281,125 @@ class InvoiceService {
     return await this.getInvoiceById(id);
   }
 
+  async updateInvoiceAdjustments(
+    data: UpdateInvoiceAdjustmentsRequest,
+  ): Promise<Invoice> {
+    const result = await AppDataSource.transaction(async (manager) => {
+      const invoiceRepo = manager.getRepository(Invoice);
+      const invoiceAdjRepo = manager.getRepository(InvoiceAdjustment);
+
+      // check if invoice exists
+      const invoice = await invoiceRepo.findOne({
+        where: { id: data.invoice_id },
+      });
+
+      if (!invoice) {
+        throw new ResourceNotFound(
+          `Invoice with ID ${data.invoice_id} not found`,
+        );
+      }
+
+      // process adjustments
+      const itemsToDelete: number[] = [];
+      const adjustmentsToSave: InvoiceAdjustment[] = [];
+      const adjustmentIds = data.adjustments
+        .filter((adj) => adj.id)
+        .map((adj) => adj.id!) as number[];
+      const existingAdjustments = (
+        adjustmentIds.length
+          ? await invoiceAdjRepo.find({
+              where: { id: In(adjustmentIds) },
+            })
+          : []
+      ).reduce(
+        (map, adj) => {
+          map[adj.id] = adj;
+          return map;
+        },
+        {} as Record<number, InvoiceAdjustment>,
+      );
+
+      for (const adjustment of data.adjustments) {
+        if (adjustment.is_deleted && adjustment.id) {
+          itemsToDelete.push(adjustment.id);
+          continue;
+        }
+
+        if (adjustment.id) {
+          const invoiceAdj = existingAdjustments[adjustment.id];
+          if (invoiceAdj) {
+            invoiceAdj.type = adjustment.type;
+            invoiceAdj.description = adjustment.description;
+            invoiceAdj.quantity = adjustment.quantity;
+            invoiceAdj.price = adjustment.price;
+            invoiceAdj.total = adjustment.quantity * adjustment.price;
+            invoiceAdj.sort = adjustment.sort;
+            adjustmentsToSave.push(invoiceAdj);
+          } else {
+            console.error(
+              `Invoice adjustment with ID ${adjustment.id} not found for update`,
+            );
+            throw new ResourceNotFound(
+              `Invoice adjustment with ID ${adjustment.id} not found`,
+            );
+          }
+        } else {
+          adjustmentsToSave.push(
+            invoiceAdjRepo.create({
+              invoice_id: data.invoice_id,
+              type: adjustment.type,
+              description: adjustment.description,
+              quantity: adjustment.quantity,
+              price: adjustment.price,
+              total: adjustment.quantity * adjustment.price,
+              sort: adjustment.sort,
+            }),
+          );
+        }
+      }
+
+      if (itemsToDelete.length > 0) {
+        await invoiceAdjRepo.delete(itemsToDelete);
+      }
+
+      if (adjustmentsToSave.length > 0) {
+        await invoiceAdjRepo.save(adjustmentsToSave);
+      }
+
+      // process invoice totals
+      const newAdjustments = await invoiceAdjRepo.find({
+        where: { invoice_id: data.invoice_id },
+      });
+      const total_additions = this.calculateTotalAdjustment(
+        newAdjustments,
+        "ADDITIONAL",
+      );
+      const total_deductions = this.calculateTotalAdjustment(
+        newAdjustments,
+        "DEDUCTION",
+      );
+
+      invoice.total_additions = total_additions;
+      invoice.total_deductions = total_deductions;
+      invoice.grand_total =
+        invoice.total_amount + total_additions - total_deductions;
+
+      const savedInvoice = await invoiceRepo.save(invoice);
+
+      return savedInvoice;
+    });
+
+    return this.getInvoiceById(result.id);
+  }
+
   async deleteInvoice(idStr: string | number): Promise<void> {
     const { id } = InvoiceIdParamSchema.parse({ id: String(idStr) });
 
     await this.getInvoiceById(id);
 
     await this.invoiceDetailRepository.delete({ invoice_id: id });
+
+    await this.invoiceAdjustmentRepository.delete({ invoice_id: id });
 
     const result = await this.invoiceRepository.delete(id);
     if ((result.affected ?? 0) === 0) {
@@ -372,6 +503,15 @@ class InvoiceService {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+  }
+
+  private calculateTotalAdjustment(
+    adjustments: InvoiceAdjustment[],
+    type: string,
+  ) {
+    return adjustments
+      .filter((adjustments) => adjustments.type === type)
+      .reduce((acc, prev) => acc + prev.price * prev.quantity, 0);
   }
 }
 

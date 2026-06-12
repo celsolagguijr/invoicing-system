@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvoiceSearchQuerySchema = exports.InvoiceIdParamSchema = exports.InvoiceUpdateSchema = exports.InvoiceDetailUpdateSchema = exports.InvoiceCreateSchema = exports.InvoiceDetailCreateSchema = void 0;
+exports.InvoiceAdjustmentsUpdateSchema = exports.InvoiceSearchQuerySchema = exports.InvoiceIdParamSchema = exports.InvoiceUpdateSchema = exports.InvoiceDetailUpdateSchema = exports.InvoiceCreateSchema = exports.InvoiceDetailCreateSchema = void 0;
 const zod_1 = require("zod");
 const DateStringSchema = zod_1.z
     .string()
@@ -18,7 +18,9 @@ exports.InvoiceDetailCreateSchema = zod_1.z.object({
         .int("Employee ID must be an integer")
         .positive("Employee ID must be a positive integer"),
     date: DateStringSchema,
-    billed_hours: zod_1.z.number().positive("Billed hours must be a positive number"),
+    billed_hours: zod_1.z
+        .number()
+        .nonnegative("Billed hours must be a positive number"),
     billed_ot_hours: zod_1.z
         .number()
         .nonnegative("Billed OT hours must be a non-negative number"),
@@ -59,7 +61,9 @@ exports.InvoiceDetailUpdateSchema = zod_1.z
         .int("Employee ID must be an integer")
         .positive("Employee ID must be a positive integer"),
     date: DateStringSchema,
-    billed_hours: zod_1.z.number().positive("Billed hours must be a positive number"),
+    billed_hours: zod_1.z
+        .number()
+        .nonnegative("Billed hours must be a positive number"),
     billed_ot_hours: zod_1.z
         .number()
         .nonnegative("Billed OT hours must be a non-negative number"),
@@ -156,4 +160,17 @@ exports.InvoiceSearchQuerySchema = zod_1.z
     data.invoice_date_from !== undefined ||
     data.invoice_date_to !== undefined, {
     message: "At least one query filter is required: invoice_no, client_id, invoice_date, invoice_date_from, or invoice_date_to",
+});
+const InvoiceAdjustmentSchema = zod_1.z.object({
+    id: zod_1.z.number().int().positive().optional(),
+    type: zod_1.z.enum(["ADDITIONAL", "DEDUCTION"]),
+    description: zod_1.z.string().trim().min(1).max(500),
+    quantity: zod_1.z.number().nonnegative(),
+    price: zod_1.z.number().nonnegative(),
+    sort: zod_1.z.number().int().nonnegative(),
+    is_deleted: zod_1.z.boolean().optional(),
+});
+exports.InvoiceAdjustmentsUpdateSchema = zod_1.z.object({
+    invoice_id: zod_1.z.number().int().positive(),
+    adjustments: zod_1.z.array(InvoiceAdjustmentSchema),
 });

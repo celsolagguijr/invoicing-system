@@ -44,6 +44,13 @@ router.put(
     invoiceController.updateInvoice(req, res),
 );
 
+router.put(
+  "/invoices/:id/adjustments",
+  validateToken.validate,
+  (req: Request<{ id?: string }>, res: Response) =>
+    invoiceController.updateInvoiceAdjustments(req, res),
+);
+
 router.delete(
   "/invoices/:id",
   validateToken.validate,

@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 let server: any;
 
-app.use(cors());
+app.use(cors({ origin: true }));
 app.use(helmet());
 
 // parse json request body
@@ -33,10 +33,11 @@ initializeDatabase()
     logger.info("Database connection established successfully");
 
     // if DB init success, run the server
-    server = app.listen(process.env.SERVER_PORT || 3000, () => {
-      logger.info(
-        `Server is running on port ${process.env.SERVER_PORT || 3000}`,
-      );
+    const PORT = Number(process.env.SERVER_PORT) || 3000;
+    const HOST = process.env.SERVER_HOST || "0.0.0.0";
+
+    server = app.listen(PORT, HOST, () => {
+      logger.info(`Server is running on http://${HOST}:${PORT}`);
     });
   })
   .catch((err) => {

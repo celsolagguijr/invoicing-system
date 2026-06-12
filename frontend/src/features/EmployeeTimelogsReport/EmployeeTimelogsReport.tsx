@@ -194,7 +194,7 @@ const EmployeeTimelogsReport: React.FC = () => {
   const handleUpdateHours = async () => {
     if (!editingRow) return;
 
-    if (!Number.isFinite(editingHours) || editingHours <= 0) {
+    if (!Number.isFinite(editingHours) || editingHours < 0) {
       showError("Working hours must be a positive number");
       return;
     }
@@ -340,8 +340,8 @@ const EmployeeTimelogsReport: React.FC = () => {
           <Form layout="vertical">
             <Form.Item label="Working Hours" required>
               <InputNumber
-                min={0.01}
-                step={0.25}
+                min={0}
+                step={1}
                 precision={2}
                 style={{ width: "100%" }}
                 value={editingHours}
@@ -352,7 +352,7 @@ const EmployeeTimelogsReport: React.FC = () => {
             <Form.Item label="OT Working Hours" required>
               <InputNumber
                 min={0}
-                step={0.25}
+                step={1}
                 precision={2}
                 style={{ width: "100%" }}
                 value={editingOtHours}

@@ -17,7 +17,9 @@ export const InvoiceDetailCreateSchema = z.object({
     .int("Employee ID must be an integer")
     .positive("Employee ID must be a positive integer"),
   date: DateStringSchema,
-  billed_hours: z.number().positive("Billed hours must be a positive number"),
+  billed_hours: z
+    .number()
+    .nonnegative("Billed hours must be a positive number"),
   billed_ot_hours: z
     .number()
     .nonnegative("Billed OT hours must be a non-negative number"),
@@ -66,7 +68,9 @@ export const InvoiceDetailUpdateSchema = z
       .int("Employee ID must be an integer")
       .positive("Employee ID must be a positive integer"),
     date: DateStringSchema,
-    billed_hours: z.number().positive("Billed hours must be a positive number"),
+    billed_hours: z
+      .number()
+      .nonnegative("Billed hours must be a positive number"),
     billed_ot_hours: z
       .number()
       .nonnegative("Billed OT hours must be a non-negative number"),
@@ -191,6 +195,21 @@ export const InvoiceSearchQuerySchema = z
         "At least one query filter is required: invoice_no, client_id, invoice_date, invoice_date_from, or invoice_date_to",
     },
   );
+
+const InvoiceAdjustmentSchema = z.object({
+  id: z.number().int().positive().optional(),
+  type: z.enum(["ADDITIONAL", "DEDUCTION"]),
+  description: z.string().trim().min(1).max(500),
+  quantity: z.number().nonnegative(),
+  price: z.number().nonnegative(),
+  sort: z.number().int().nonnegative(),
+  is_deleted: z.boolean().optional(),
+});
+
+export const InvoiceAdjustmentsUpdateSchema = z.object({
+  invoice_id: z.number().int().positive(),
+  adjustments: z.array(InvoiceAdjustmentSchema),
+});
 
 export type InvoiceCreateInput = z.infer<typeof InvoiceCreateSchema>;
 export type InvoiceUpdateInput = z.infer<typeof InvoiceUpdateSchema>;

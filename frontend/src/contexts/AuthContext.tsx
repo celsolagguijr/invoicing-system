@@ -31,7 +31,9 @@ const AuthProvider: React.FC<AuthProviderType> = (props: AuthProviderType) => {
   const [token, setToken] = useState<string>(() => {
     return localStorage.getItem("access_token") || "";
   });
-  const [isValid, setIsValid] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(() =>
+    isTokenValid(localStorage.getItem("access_token") || "")
+  );
 
   // Update isValid when token changes
   useEffect(() => {

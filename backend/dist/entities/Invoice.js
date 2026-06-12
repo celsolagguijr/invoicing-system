@@ -13,6 +13,7 @@ exports.Invoice = void 0;
 const typeorm_1 = require("typeorm");
 const Client_1 = require("./Client");
 const InvoiceDetail_1 = require("./InvoiceDetail");
+const InvoiceAdjustment_1 = require("./InvoiceAdjustment");
 let Invoice = class Invoice {
 };
 exports.Invoice = Invoice;
@@ -69,6 +70,16 @@ __decorate([
     __metadata("design:type", Number)
 ], Invoice.prototype, "total_working_hours", void 0);
 __decorate([
+    (0, typeorm_1.Column)({
+        type: "decimal",
+        precision: 10,
+        scale: 2,
+        nullable: false,
+        default: 0,
+    }),
+    __metadata("design:type", Number)
+], Invoice.prototype, "total_ot_working_hours", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: "decimal", precision: 15, scale: 2, nullable: false }),
     __metadata("design:type", Number)
 ], Invoice.prototype, "total_amount", void 0);
@@ -78,6 +89,24 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Invoice.prototype, "invoice_details", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => InvoiceAdjustment_1.InvoiceAdjustment, (adjustment) => adjustment.invoice, {
+        cascade: true,
+    }),
+    __metadata("design:type", Array)
+], Invoice.prototype, "invoice_adjustments", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "decimal", precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], Invoice.prototype, "total_additions", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "decimal", precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], Invoice.prototype, "total_deductions", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "decimal", precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], Invoice.prototype, "grand_total", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

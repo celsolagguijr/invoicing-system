@@ -44,6 +44,20 @@ export interface UpdateInvoiceRequest {
   invoice_details?: UpdateInvoiceDetailRequest[];
 }
 
+export interface AdjustmentRequest {
+  id?: number;
+  type: "ADDITIONAL" | "DEDUCTION";
+  description: string;
+  quantity: number;
+  price: number;
+  sort: number;
+  is_deleted?: boolean;
+}
+
+export interface UpdateInvoiceAdjustmentsRequest {
+  invoice_id: number;
+  adjustments: AdjustmentRequest[];
+}
 export interface SearchInvoiceQueryRequest {
   invoice_no?: string;
   client_id?: string;

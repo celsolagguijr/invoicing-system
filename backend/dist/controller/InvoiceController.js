@@ -92,6 +92,19 @@ class InvoiceController {
             return res.status(response.status).json(response);
         }
     }
+    async updateInvoiceAdjustments(req, res) {
+        try {
+            const validatedData = InvoiceValidator_1.InvoiceAdjustmentsUpdateSchema.parse(req.body);
+            const invoice = await this.invoiceService.updateInvoiceAdjustments(validatedData);
+            return res
+                .status(HttpStatus_1.default.OK)
+                .json(this.responseBuilder.ok(invoice, "Invoice Adjustments Updated Successfully"));
+        }
+        catch (error) {
+            const response = (0, utils_1.handleErrors)(error);
+            return res.status(response.status).json(response);
+        }
+    }
     async deleteInvoice(req, res) {
         try {
             const { id } = InvoiceValidator_1.InvoiceIdParamSchema.parse({ id: req.params.id });

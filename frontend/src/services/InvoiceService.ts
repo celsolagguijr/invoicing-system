@@ -6,6 +6,7 @@ import type {
   InvoiceDetails,
   SearchInvoiceParams,
   CreateInvoiceRequest,
+  InvoiceAdjustmentRequest,
 } from "@app/shared/types/services/invoice";
 
 export type {
@@ -53,6 +54,18 @@ class InvoiceService {
       `Bearer ${this.authService.getToken()}`;
 
     const response = await axios.get(`/invoices/${id}`);
+    return response.data;
+  }
+
+  async saveAdjustments(
+    data: InvoiceAdjustmentRequest
+  ): Promise<Response<InvoiceDetails>> {
+    axios.defaults.headers.common["Authorization"] =
+      `Bearer ${this.authService.getToken()}`;
+    const response = await axios.put(
+      `/invoices/${data.invoice_id}/adjustments`,
+      data
+    );
     return response.data;
   }
 

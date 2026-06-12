@@ -38,6 +38,49 @@ const tableHeader = (doc, y, left) => {
         .text("OT", left + 412, y + 7, { width: 44, align: "right" })
         .text("Amount", left + 462, y + 7, { width: 46, align: "right" });
 };
+const adjustmentSectionHeader = (doc, y, left, title, bgColor) => {
+    doc.lineWidth(0.6).rect(left, y, 515, 22).fillAndStroke(bgColor, "#94a3b8");
+    doc
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .fillColor("#111827")
+        .text(title, left + 8, y + 7, { width: 300 })
+        .text("Qty", left + 366, y + 7, { width: 40, align: "right" })
+        .text("Price", left + 412, y + 7, { width: 44, align: "right" })
+        .text("Amount", left + 462, y + 7, { width: 46, align: "right" });
+};
+const renderAdjustmentRow = (doc, y, left, description, quantity, price, amount) => {
+    doc.lineWidth(0.5).rect(left, y, 515, 20).strokeColor("#cbd5e1").stroke();
+    doc
+        .fillColor("#111827")
+        .font("Helvetica")
+        .fontSize(9)
+        .text(description || "-", left + 8, y + 6, { width: 350 })
+        .text(formatMoney(quantity), left + 366, y + 6, {
+        width: 40,
+        align: "right",
+    })
+        .text(formatMoney(price), left + 412, y + 6, {
+        width: 44,
+        align: "right",
+    })
+        .text(formatMoney(amount), left + 462, y + 6, {
+        width: 46,
+        align: "right",
+    });
+};
+const renderAdjustmentTotal = (doc, y, left, total) => {
+    doc.lineWidth(0.6).rect(left, y, 515, 20).strokeColor("#94a3b8").stroke();
+    doc
+        .fillColor("#111827")
+        .font("Helvetica-Bold")
+        .fontSize(9)
+        .text("Total", left + 240, y + 6, { width: 120 })
+        .text(formatMoney(total), left + 462, y + 6, {
+        width: 46,
+        align: "right",
+    });
+};
 const drawPaymentFooter = (doc, left, yStart) => {
     const width = 515;
     const cardHeight = 128;
@@ -69,7 +112,7 @@ const drawPaymentFooter = (doc, left, yStart) => {
 };
 const generateInvoicePdfBuffer = (invoice) => {
     return new Promise((resolve, reject) => {
-        const doc = new pdfkit_1.default({ size: "A4", margin: 40 });
+        const doc = new pdfkit_1.default({ size: [612, 936], margin: 40 });
         const buffers = [];
         doc.on("data", (chunk) => buffers.push(chunk));
         doc.on("end", () => resolve(Buffer.concat(buffers)));
@@ -156,7 +199,7 @@ const generateInvoicePdfBuffer = (invoice) => {
         let computedAmount = 0;
         invoice.invoice_details.forEach((detail) => {
             if (y > 730) {
-                doc.addPage({ size: "A4", margin: 40 });
+                doc.addPage({ size: [612, 936], margin: 40 });
                 y = 40;
                 tableHeader(doc, y, left);
                 y += 22;
@@ -199,7 +242,7 @@ const generateInvoicePdfBuffer = (invoice) => {
         const displayRate = Number(invoice.hourly_rate || 0);
         const displayOtRate = Number(invoice.ot_hourly_rate || 0);
         if (y > 730) {
-            doc.addPage({ size: "A4", margin: 40 });
+            doc.addPage({ size: [612, 936], margin: 40 });
             y = 40;
             tableHeader(doc, y, left);
             y += 22;
@@ -223,6 +266,63 @@ const generateInvoicePdfBuffer = (invoice) => {
             align: "right",
         });
         y += 20;
+        // Render Additional Charges Section
+        const additionalCharges = invoice.invoice_adjustments?.filter((adj) => adj.type === "ADDITIONAL") ||
+            [];
+        const totalAdditionalCharges = additionalCharges.reduce((sum, adj) => sum + Number(adj.total || 0), 0) ||
+            Number(invoice.total_additions || 0);
+        if (additionalCharges.length > 0) {
+            if (y > 730) {
+                doc.addPage({ size: [612, 936], margin: 40 });
+                y = 40;
+            }
+            y += 8;
+            adjustmentSectionHeader(doc, y, left, "Other Charges (+)", "#e6f4ff");
+            y += 22;
+            additionalCharges.forEach((charge) => {
+                if (y > 730) {
+                    doc.addPage({ size: [612, 936], margin: 40 });
+                    y = 40;
+                    adjustmentSectionHeader(doc, y, left, "Additional Charges", "#e6f4ff");
+                    y += 22;
+                }
+                renderAdjustmentRow(doc, y, left, charge.description || "-", Number(charge.quantity || 0), Number(charge.price || 0), Number(charge.total || 0));
+                y += 20;
+            });
+            renderAdjustmentTotal(doc, y, left, totalAdditionalCharges);
+            y += 20;
+        }
+        // Render Deductions Section
+        const deductions = invoice.invoice_adjustments?.filter((adj) => adj.type === "DEDUCTION") ||
+            [];
+        const totalDeductions = deductions.reduce((sum, adj) => sum + Number(adj.total || 0), 0) ||
+            Number(invoice.total_deductions || 0);
+        if (deductions.length > 0) {
+            if (y > 730) {
+                doc.addPage({ size: [612, 936], margin: 40 });
+                y = 40;
+            }
+            y += 8;
+            adjustmentSectionHeader(doc, y, left, "Adjustments (-)", "#fff7e6");
+            y += 22;
+            deductions.forEach((deduction) => {
+                if (y > 730) {
+                    doc.addPage({ size: [612, 936], margin: 40 });
+                    y = 40;
+                    adjustmentSectionHeader(doc, y, left, "Adjustments (-)", "#fff7e6");
+                    y += 22;
+                }
+                renderAdjustmentRow(doc, y, left, deduction.description || "-", Number(deduction.quantity || 0), Number(deduction.price || 0), Number(deduction.total || 0));
+                y += 20;
+            });
+            renderAdjustmentTotal(doc, y, left, totalDeductions);
+            y += 20;
+        }
+        // Calculate grand total with fallback logic
+        const grandTotal = invoice.grand_total != null && Number(invoice.grand_total) > 0
+            ? Number(invoice.grand_total)
+            : displayAmount + totalAdditionalCharges - totalDeductions;
+        const grandTotalUsd = Number((grandTotal / 0.82).toFixed(2));
         y += 14;
         doc.moveTo(left, y).lineTo(right, y).strokeColor("#cbd5e1").stroke();
         y += 12;
@@ -255,7 +355,7 @@ const generateInvoicePdfBuffer = (invoice) => {
             .font("Helvetica-Bold")
             .fontSize(11)
             .fillColor("#003a8c")
-            .text(`Total Amount: KYD ${formatMoney(displayAmount)}`, totalHighlightX + 8, summaryY + 1, {
+            .text(`Total Amount: KYD ${formatMoney(grandTotal)}`, totalHighlightX + 8, summaryY + 1, {
             width: totalHighlightWidth - 16,
             align: "right",
         });
@@ -267,7 +367,7 @@ const generateInvoicePdfBuffer = (invoice) => {
             .font("Helvetica-Bold")
             .fontSize(11)
             .fillColor("#ad4e00")
-            .text(`Total Amount: USD ${formatMoney(displayAmountUsd)}`, totalHighlightX + 8, usdHighlightY + 5, {
+            .text(`Total Amount: USD ${formatMoney(grandTotalUsd)}`, totalHighlightX + 8, usdHighlightY + 5, {
             width: totalHighlightWidth - 16,
             align: "right",
         });
@@ -275,7 +375,7 @@ const generateInvoicePdfBuffer = (invoice) => {
         const paymentBlockTop = y + 12;
         const paymentBlockHeight = 128;
         if (paymentBlockTop + paymentBlockHeight > doc.page.height - 40) {
-            doc.addPage({ size: "A4", margin: 40 });
+            doc.addPage({ size: [612, 936], margin: 40 });
             y = 40;
         }
         drawPaymentFooter(doc, left, y + 12);

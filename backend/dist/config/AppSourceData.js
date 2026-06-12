@@ -14,6 +14,7 @@ const Invoice_1 = require("../entities/Invoice");
 const InvoiceDetail_1 = require("../entities/InvoiceDetail");
 const dotenv_1 = __importDefault(require("dotenv"));
 const logger_1 = __importDefault(require("./logger"));
+const InvoiceAdjustment_1 = require("../entities/InvoiceAdjustment");
 dotenv_1.default.config();
 exports.AppDataSource = new typeorm_1.DataSource({
     type: "better-sqlite3",
@@ -27,6 +28,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
         EmployeeCustomerTransaction_1.EmployeeCustomerTransaction,
         Invoice_1.Invoice,
         InvoiceDetail_1.InvoiceDetail,
+        InvoiceAdjustment_1.InvoiceAdjustment,
     ],
 });
 /**
